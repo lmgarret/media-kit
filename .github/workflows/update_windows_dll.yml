@@ -33,7 +33,7 @@ jobs:
       - name: Update CMakeLists.txt
         run: |
             cd libs/windows/media_kit_libs_windows_video/windows
-            sed -i "s#LIBMPV_URL \".*\"LIBMPV_URL \"${{ steps.get_release_url.outputs.url }}\"#g" CMakeLists.txt
+            sed -i "s#LIBMPV_URL \".*\"#LIBMPV_URL \"${{ steps.get_release_url.outputs.url }}\"#g" CMakeLists.txt
             sed -i "s/LIBMPV_MD5 \".*\"/LIBMPV_MD5 \"${{ steps.calculate_md5.outputs.md5 }}\"/g" CMakeLists.txt
 
       - name: Commit changes
