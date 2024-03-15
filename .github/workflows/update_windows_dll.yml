@@ -12,13 +12,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install 7zip
-        run: sudo apt-get install p7zip-full -y
-
       - name: Get latest release URL
         id: get_release_url
         run: |
-            latest_release_url=$(curl -s https://api.github.com/repos/shinchiro/mpv-winbuild-cmake/releases/latest | jq -r '.assets[].browser_download_url' | grep 'mpv-dev-x86_64-2*.7z')
+            latest_release_url=$(curl -s https://api.github.com/repos/shinchiro/mpv-winbuild-cmake/releases/latest | jq -r '.assets[].browser_download_url' | grep mpv-dev-x86_64-2)
             echo "::set-output name=url::$latest_release_url"
 
       - name: Download archive
@@ -34,8 +31,7 @@ jobs:
 
       - name: Update CMakeLists.txt
         run: |
-            filename=$(basename ${{ steps.get_release_url.outputs.url }})
-            sed -i "s/set(LIBMPV \"mpv-dev-x86_64-2*.7z\")/set(LIBMPV \"$filename\")/g" CMakeLists.txt
+            sed -i "s/set(LIBMPV_URL \"*\")/set(LIBMPV_URL \"${{ steps.get_release_url.outputs.url }}\")/g" CMakeLists.txt
             sed -i "s/set(LIBMPV_MD5 \"*\")/set(LIBMPV_MD5 \"${{ steps.calculate_md5.outputs.md5 }}\")/g" CMakeLists.txt
 
       - name: Commit changes
