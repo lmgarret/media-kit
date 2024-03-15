@@ -27,14 +27,14 @@ jobs:
       - name: Calculate MD5 hash
         id: calculate_md5
         run: |
-            md5sum mpv-dev-x86_64-2*.7z > md5.txt
+            md5sum mpv-dev-x86_64-2*.7z | awk '{print $1}' > md5.txt
             echo "::set-output name=md5::$(cat md5.txt)"
 
       - name: Update CMakeLists.txt
         run: |
             cd libs/windows/media_kit_libs_windows_video/windows
-            sed -i "s#set(LIBMPV_URL \"#set(LIBMPV_URL \"${{ steps.get_release_url.outputs.url }}#g" CMakeLists.txt
-            sed -i "s/set(LIBMPV_MD5 \"/set(LIBMPV_MD5 \"${{ steps.calculate_md5.outputs.md5 }}/g" CMakeLists.txt
+            sed -i "s#set(LIBMPV_URL \"*\")#set(LIBMPV_URL \"${{ steps.get_release_url.outputs.url }}\")#g" CMakeLists.txt
+            sed -i "s/set(LIBMPV_MD5 \"*\")/set(LIBMPV_MD5 \"${{ steps.calculate_md5.outputs.md5 }}\")/g" CMakeLists.txt
 
       - name: Commit changes
         run: |
