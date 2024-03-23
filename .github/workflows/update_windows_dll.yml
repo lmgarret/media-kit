@@ -38,7 +38,13 @@ jobs:
             sed -i "s#LIBMPV_URL \".*\"#LIBMPV_URL \"${{ steps.get_release_url.outputs.url }}\"#g" CMakeLists.txt
             sed -i "s/LIBMPV_MD5 \".*\"/LIBMPV_MD5 \"${{ steps.calculate_md5.outputs.md5 }}\"/g" CMakeLists.txt
 
+      - name: Check if CMakeLists.txt has changed
+        id: check_changes
+        run: |
+            git diff --quiet --exit-code libs/windows/media_kit_libs_windows_video/windows/CMakeLists.txt || echo "::set-output name=changed::true"
+
       - name: Commit changes
+        if: steps.check_changes.outputs.changed == 'true'
         run: |
             git config --global user.name "GitHub Actions"
             git config --global user.email "actions@github.com"
